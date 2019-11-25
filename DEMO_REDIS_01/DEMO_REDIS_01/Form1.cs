@@ -18,6 +18,39 @@ namespace DEMO_REDIS_01
             txtID.ReadOnly = values;
             txtManufacturer.ReadOnly = values;
             txtModel.ReadOnly = values;
+            btnCancel.Enabled = !values;
+            btnSave.Enabled = !values;
+        }
+
+        void DeactiveAnotherButton(int index = -1)
+        {
+            /* 
+             0 == btnAdd 
+             1 == btnEdit
+             2 == btnDelete
+             */
+            if (index == -1)
+            {
+                btnAdd.Enabled = true;
+                btnEdit.Enabled = true;
+                btnDelete.Enabled = true;
+                return;
+            }
+            btnAdd.Enabled = false;
+            btnEdit.Enabled = false;
+            btnDelete.Enabled = false;
+            switch (index)
+            {
+                case 0:
+                    btnAdd.Enabled = true;
+                    break;
+                case 1:
+                    btnEdit.Enabled = true;
+                    break;
+                case 2:
+                    btnDelete.Enabled = true;
+                    break;
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -28,6 +61,7 @@ namespace DEMO_REDIS_01
         private void BtnAdd_Click(object sender, EventArgs e)
         {
             ClearText();
+            DeactiveAnotherButton(0);
             phoneBindingSource.Add(new Phone());
             phoneBindingSource.MoveLast();
             Edit(false);
@@ -36,6 +70,7 @@ namespace DEMO_REDIS_01
 
         private void BtnEdit_Click(object sender, EventArgs e)
         {
+            DeactiveAnotherButton(1);
             Edit(false);
             txtID.Focus();
         }
@@ -44,7 +79,9 @@ namespace DEMO_REDIS_01
         {
             Edit(true);
             phoneBindingSource.ResetBindings(false);
-            ClearText();
+            UpdateDB();
+            DeactiveAnotherButton();
+            metroLabel1.Focus();
         }
 
         void ClearText()
@@ -56,6 +93,7 @@ namespace DEMO_REDIS_01
 
         private void BtnDelete_Click(object sender, EventArgs e)
         {
+            DeactiveAnotherButton(2);
             if (MetroFramework.MetroMessageBox.Show(this, "Are you sure want to delete this record ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 Phone p = phoneBindingSource.Current as Phone;
@@ -67,6 +105,11 @@ namespace DEMO_REDIS_01
                     ClearText();
                     UpdateDB();
                 }
+                DeactiveAnotherButton();
+            }
+            else
+            {
+                DeactiveAnotherButton();
             }
         }
 
@@ -87,8 +130,9 @@ namespace DEMO_REDIS_01
                 phone.StoreAll(ListWillStore);
                 MetroFramework.MetroMessageBox.Show(this, "Your data has been successfully saved.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearText();
-                UpdateDB();
+                DeactiveAnotherButton();
             }
+            UpdateDB();
         }
 
         private void UpdateDB()
