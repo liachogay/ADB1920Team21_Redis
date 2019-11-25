@@ -13,5 +13,15 @@ namespace DEMO_REDIS_01
         public string Model { get; set; }
 
         public string Manufacturer { get; set; }
+
+        public bool IsNull()
+        {
+            bool isNull = false;
+            if (ID == null || Model == null || Manufacturer == null)
+            {
+                isNull = true;
+            }
+            return isNull;
+        }
     }
 }

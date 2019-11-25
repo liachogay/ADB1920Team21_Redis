@@ -2,12 +2,6 @@
 using ServiceStack.Redis.Generic;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DEMO_REDIS_01
@@ -19,7 +13,7 @@ namespace DEMO_REDIS_01
             InitializeComponent();
         }
 
-        void Edit (bool values)
+        void Edit(bool values)
         {
             txtID.ReadOnly = values;
             txtManufacturer.ReadOnly = values;
@@ -28,12 +22,7 @@ namespace DEMO_REDIS_01
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            using (RedisClient client = new RedisClient("localhost", 6379))
-            {
-                IRedisTypedClient<Phone> phone = client.As<Phone>();
-                phoneBindingSource.DataSource = phone.GetAll();
-                Edit(true);
-            }
+            UpdateDB();
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
@@ -58,7 +47,7 @@ namespace DEMO_REDIS_01
             ClearText();
         }
 
-        void ClearText ()
+        void ClearText()
         {
             txtID.Text = string.Empty;
             txtManufacturer.Text = string.Empty;
@@ -76,6 +65,7 @@ namespace DEMO_REDIS_01
                     phone.DeleteById(p.ID);
                     phoneBindingSource.RemoveCurrent();
                     ClearText();
+                    UpdateDB();
                 }
             }
         }
@@ -86,12 +76,29 @@ namespace DEMO_REDIS_01
             {
                 phoneBindingSource.EndEdit();
                 IRedisTypedClient<Phone> phone = client.As<Phone>();
-                phone.StoreAll(phoneBindingSource.DataSource as List<Phone>);
+                List<Phone> ListWillStore = new List<Phone>();
+                foreach (var temp in phoneBindingSource.DataSource as List<Phone>)
+                {
+                    if (!temp.IsNull())
+                    {
+                        ListWillStore.Add(temp);
+                    }
+                }
+                phone.StoreAll(ListWillStore);
                 MetroFramework.MetroMessageBox.Show(this, "Your data has been successfully saved.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearText();
-                Edit(true);
+                UpdateDB();
             }
         }
 
+        private void UpdateDB()
+        {
+            using (RedisClient client = new RedisClient("localhost", 6379))
+            {
+                IRedisTypedClient<Phone> phone = client.As<Phone>();
+                phoneBindingSource.DataSource = phone.GetAll();
+                Edit(true);
+            }
+        }
     }
 }
