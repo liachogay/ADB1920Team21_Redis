@@ -13,9 +13,19 @@ namespace DEMO_REDIS_01
             InitializeComponent();
         }
 
-        void Edit(bool values)
+        bool IsEdit = false;
+
+        void Edit(bool values, bool Edit = false)
         {
-            txtID.ReadOnly = values;
+            if (values == false && Edit == true)
+            {
+                txtID.ReadOnly = true;
+                IsEdit = true;
+            }
+            else
+            {
+                txtID.ReadOnly = values;
+            }
             txtManufacturer.ReadOnly = values;
             txtModel.ReadOnly = values;
             btnCancel.Enabled = !values;
@@ -71,7 +81,7 @@ namespace DEMO_REDIS_01
         private void BtnEdit_Click(object sender, EventArgs e)
         {
             DeactiveAnotherButton(1);
-            Edit(false);
+            Edit(false, true);
             txtID.Focus();
         }
 
@@ -131,6 +141,7 @@ namespace DEMO_REDIS_01
                 MetroFramework.MetroMessageBox.Show(this, "Your data has been successfully saved.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearText();
                 DeactiveAnotherButton();
+
             }
             UpdateDB();
         }
@@ -142,6 +153,27 @@ namespace DEMO_REDIS_01
                 IRedisTypedClient<Phone> phone = client.As<Phone>();
                 phoneBindingSource.DataSource = phone.GetAll();
                 Edit(true);
+            }
+        }
+
+        private void BtnSearch_Click(object sender, EventArgs e)
+        {
+            string Keyword = string.Empty;
+            Keyword = metroTextBox1.Text;
+            List<int> vs = new List<int>();
+            using (RedisClient client = new RedisClient("localhost", 6379))
+            {
+                IRedisTypedClient<Phone> phone = client.As<Phone>();
+                IList<Phone> phones = phone.GetAll();
+                for (int i = 0; i < phones.Count; i++)
+                {
+                    if (!phones[i].Model.Contains(Keyword))
+                    {
+                        phones.RemoveAt(i);
+                        i--;
+                    }
+                }
+                phoneBindingSource.DataSource = phones;
             }
         }
     }
