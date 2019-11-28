@@ -360,7 +360,7 @@
             this.Controls.Add(this.metroLabel1);
             this.Controls.Add(this.metroGrid1);
             this.Name = "Form1";
-            this.Text = "REDIS";
+            this.Text = "REDIS - Phone";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.metroGrid1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.phoneBindingSource)).EndInit();

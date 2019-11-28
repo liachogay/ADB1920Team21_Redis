@@ -138,6 +138,7 @@ namespace DEMO_REDIS_01
                     }
                 }
                 phone.StoreAll(ListWillStore);
+                client.Save();
                 MetroFramework.MetroMessageBox.Show(this, "Your data has been successfully saved.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearText();
                 DeactiveAnotherButton();
@@ -167,7 +168,7 @@ namespace DEMO_REDIS_01
                 IList<Phone> phones = phone.GetAll();
                 for (int i = 0; i < phones.Count; i++)
                 {
-                    if (!phones[i].Model.Contains(Keyword))
+                    if (!phones[i].Model.Contains(Keyword) && !phones[i].Manufacturer.Contains(Keyword))
                     {
                         phones.RemoveAt(i);
                         i--;
